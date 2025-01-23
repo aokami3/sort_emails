@@ -15,6 +15,8 @@
 ### 追加機能
 1.workflowのwebhook要求を受信するとチャンネルに投函する機能を用いてteamsへメッセージを送信。
 <img width="1466" alt="スクリーンショット 2025-01-23 20 34 34" src="https://github.com/user-attachments/assets/839e6b15-2e5e-4855-9d56-771792d436de" />
+<img width="1470" alt="スクリーンショット 2025-01-23 20 36 47" src="https://github.com/user-attachments/assets/f3ebf4b7-7ba7-4c87-a12b-5690b3facae4" />
+
 黒塗りされている部分にはURLが表示されており、そこへPOSTリクエストを送信することで、以下のようにメッセージカード(内容は例)が送信される
 <img width="645" alt="スクリーンショット 2025-01-23 20 40 16" src="https://github.com/user-attachments/assets/44b2e0ef-2431-4658-abbc-996561a0448f" />
 （参考）[Microsoft TeamsのIncoming Webhookが廃止になるので、Workflows(Power Automate)で通知する方法を調べた - Devplatform blog](https://blog.devplatform.techmatrix.jp/blog/teams_workflows_notification/)
@@ -23,6 +25,7 @@ pythonからboxへファイルをアップロードし、workflowの中にある
 <img width="1085" alt="スクリーンショット 2025-01-23 20 45 32" src="https://github.com/user-attachments/assets/a2686630-e08e-4737-8a89-07a8ddbda49b" />
 （参考）[Box連携講座「組み合わせるとこんなに便利！Office365編」（2021.9.17） | 株式会社 Box Japan](https://www.boxsquare.jp/videos/admin/box-online-seminar-20210917)
 また、pythonからBOXへのアップロードはBox Python SDKを利用して行う。
+
 （参考）[Pythonを使用してBoxにコンテンツをアップロードする3つの方法 | by Yuko Taniguchi | Box Developer Japan Blog | Medium](https://medium.com/box-developer-japan-blog/python%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%A6box%E3%81%AB%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%82%92%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E3%81%99%E3%82%8B3%E3%81%A4%E3%81%AE%E6%96%B9%E6%B3%95-db0e26ec3d74)
 
 ## 質問事項
