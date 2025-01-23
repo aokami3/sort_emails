@@ -20,9 +20,11 @@
 黒塗りされている部分にはURLが表示されており、そこへPOSTリクエストを送信することで、以下のようにメッセージカード(内容は例)が送信される
 <img width="645" alt="スクリーンショット 2025-01-23 20 40 16" src="https://github.com/user-attachments/assets/44b2e0ef-2431-4658-abbc-996561a0448f" />
 （参考）[Microsoft TeamsのIncoming Webhookが廃止になるので、Workflows(Power Automate)で通知する方法を調べた - Devplatform blog](https://blog.devplatform.techmatrix.jp/blog/teams_workflows_notification/)
+
 2.ファイルはBoxなどのクラウドに保存し、リンクを流す（teamsとbox連携）
 pythonからboxへファイルをアップロードし、workflowの中にある機能を用いて通知とリンクを送信する。
 <img width="1085" alt="スクリーンショット 2025-01-23 20 45 32" src="https://github.com/user-attachments/assets/a2686630-e08e-4737-8a89-07a8ddbda49b" />
+
 （参考）[Box連携講座「組み合わせるとこんなに便利！Office365編」（2021.9.17） | 株式会社 Box Japan](https://www.boxsquare.jp/videos/admin/box-online-seminar-20210917)
 また、pythonからBOXへのアップロードはBox Python SDKを利用して行う。
 
