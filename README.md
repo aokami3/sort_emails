@@ -10,6 +10,7 @@
 - pywin32：WindowsのCOMオブジェクトを操作するためのライブラリです。Outlookの操作に必要な機能を提供しています。メールの読み込みに使用。
 - win32com.client：pywin32のサブモジュールで、COMオブジェクトを操作するための機能を提供しています。
 (参考 : [PythonでOutlookを操作する：メール送信から予定抽出まで | Pythonの学習帳](https://beginner-engineers.com/python-outlook/#Python%E3%81%A8Outlook%E3%81%AE%E9%80%A3%E6%90%BA%E3%81%95%E3%81%9B%E3%82%8B%E3%81%A8))
+
 常時稼働させるため、flaskサーバを構築し、その上でプログラムを動作させる。
 ### 追加機能
 1.workflowのwebhook要求を受信するとチャンネルに投函する機能を用いてteamsへメッセージを送信。
