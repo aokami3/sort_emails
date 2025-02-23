@@ -1,0 +1,38 @@
+{
+    "cat1": {
+      "subject": ["students", "情報科学プログラム", "もみじ"],
+      "address": ["momiji@hiroshima-u.ac.jp", "noreply@moodle.vle.hiroshima-u.ac.jp","noreply@email.teams.microsoft.com"],
+      "folder": "#01_大学",
+      "unread": true
+    },
+    "sub1": {
+      "subject": ["広島大学図書館"],
+      "address": ["library@hiroshima-u.ac.jp"],
+      "folder": "01_図書館",
+      "unread": true
+    },
+    "cat2": {
+      "subject": ["ソフトバンク", "SoftBank"],
+      "address": ["@g.softbank.co.jp", "iono08@hiroshima-u.ac.jp"],
+      "folder": "02_ソフトバンク",
+      "unread": true
+    },
+    "cat3": {
+      "subject": ["確認コード"],
+      "address": ["no-reply-NJY3GJnnOBhOqmL8vrVt37oJ@slack.com", "account-security-noreply@accountprotection.microsoft.com"],
+      "folder": "03_ワンタイムパスワード",
+      "unread": true
+    },
+    "archive": {
+      "subject": [],
+      "address": ["maccount@microsoft.com"],
+      "folder": "アーカイブ",
+      "unread": false
+    },
+    "del": {
+      "subject": ["研究ボランティア"],
+      "address": ["no-reply@nissan-e-sharemobi.jp", "bmk-hiroshima-admin@sona-systems.net", "hiroshima@miracrew.univ-coop.net", "capr@office.hiroshima-u.ac.jp"],
+      "folder": "削除済みアイテム",
+      "unread": true
+    }
+  }
