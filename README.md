@@ -14,8 +14,11 @@
 
 1. outlookアカウントの下にメールを振り分けたいフォルダを作成する。
 <img width="1470" alt="スクリーンショット 2025-02-26 18 06 14" src="https://github.com/user-attachments/assets/3f5a57c0-fd70-4531-bb38-fa8637540947" />
+
 2. mail_json_説明資料.txtを参考にして、mail.jsonを記述(テストの場合、少量のメールを対象にしてください)
+
 3. mail_move.pyの14行目dir_pathを変更(場所に指定なし)
+
 4. python ./mailmove.pyを実行
 
 ## 基本機能
