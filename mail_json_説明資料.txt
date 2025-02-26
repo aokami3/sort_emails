@@ -1,0 +1,20 @@
+{
+    "cat1": { ここは一意となる識別子（名前）であれば大丈夫
+      "subject": ["students", "情報科学プログラム", "もみじ"],folderで指定したフォルダに振り分けたいメールの件名を指定(完全一致ではなく、部分一致でメールの件名と比較を行う、例では件名の一部を入力している)
+      "address": ["momiji@hiroshima-u.ac.jp", "noreply@moodle.vle.hiroshima-u.ac.jp","noreply@email.teams.microsoft.com"],folderで指定したフォルダに振り分けたいメールの送信元を指定、こちらも部分一致でメールのアドレスと比較する
+      "folder": "#01_大学", subjectとaddressで指定したメールを振り分けたいフォルダを指定（ない場合は自動で作成することとする）、親フォルダの場合"#"を付ける
+      "unread": true 未読のメールを対象とするか
+    },
+    "sub1": {サブフォルダの場合は、親フォルダ(今回は"#01_大学")の下に記述する（プログラムの仕組み上こうしなければならない（改善すべき点でもある））
+      "subject": ["広島大学図書館"],
+      "address": ["library@hiroshima-u.ac.jp"],
+      "folder": "01_図書館",
+      "unread": true
+    },
+    "del": {"del"のみ"削除済みアイテム"を指し示す予約語,
+      "subject": ["研究ボランティア", "ドコモ"],
+      "address": ["no-reply@nissan-e-sharemobi.jp", "bmk-hiroshima-admin@sona-systems.net", "hiroshima@miracrew.univ-coop.net", "capr@office.hiroshima-u.ac.jp"],
+      "folder": "削除済みアイテム",
+      "unread": true
+    }
+}
