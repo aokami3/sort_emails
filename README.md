@@ -5,10 +5,9 @@
 ### 環境構築
 
 1. 仮想環境の構築：```python3 -m venv myenv```
-2. 仮想環境の起動```.\myenv\Scripts\activate```
-
-権限エラーになった場合、以下を実行し実行権限を変更
+2. 仮想環境の起動```.\myenv\Scripts\activate```権限エラーになった場合、以下を実行し実行権限を変更
 	   ```Set-ExecutionPolicy RemoteSigned```
+
 3. 必要なライブラリをインストール
 	```pip install -r requirements.txt```
 ### 準備と実行
