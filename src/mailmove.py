@@ -115,13 +115,23 @@ def move_mail(
             print(dest.name, message.subject)
             message.unread = False
             message.move(dest)
-            file_name = sanitize_filename(message.subject) + ".txt"
-            # print(os.path.join(local_path[str(dest)], file_name))            
-            with open(os.path.join(local_path[str(dest)], file_name), "w", encoding='utf-8') as f:
-                f.write(str(message.SentOn))
-                f.write(str(message.Sender))
-                f.write(str(message.subject))
-                f.write(str(message.body))
+            # メールの処理
+            if message.Attachments.Count > 0:
+                # 添付ファイルがある場合、フォルダを作成して保存
+                file_name = sanitize_filename(message.Subject)
+                attachment_folder_path = os.path.join(local_path[str(dest)], file_name)
+                save_attachments(attachment_folder_path, message)
+                
+                # メール内容をフォルダ内のテキストファイルに保存
+                file_name = file_name + ".txt"
+                file_path = os.path.join(attachment_folder_path, file_name)
+            else:
+                # 添付ファイルがない場合、通常のテキストファイルに保存
+                file_name = sanitize_filename(message.Subject) + ".txt"
+                file_path = os.path.join(local_path[str(dest)], file_name)
+
+            # メール内容を保存
+            save_email_content(file_path, message)
     print("moved:", counter_move, "delete:", counter_delete, "remain:", counter_remain)
     
 # アーカイブ処理を全アーカイブ対象フォルダに対して実行
@@ -136,18 +146,26 @@ def do_all_folder(dic, folders):
 dic, folders = load_json()
 
 def check_dir():
-    print("***** ローカルに保存するためのフォルダがあるか確認します。無い場合は新たに作成します。 *****")
-    for cat, folder in folders.items():
-        if '#' not in str(folder): # サブフォルダの場合, 親フォルダの後ろにくっつける
-            path = os.path.join(path, str(folder))
-        # print(os.path.join(dir_path, str(folder)))
+    """ローカルに保存するためのフォルダがあるか確認し、無い場合は新たに作成します。"""
+    for category, folder_name in folders.items():
+        # "del" カテゴリはスキップ
+        if category == "del":
+            continue
+
+        # 親フォルダかどうかの判定
+        if "#" in str(folder_name) or category == "archive":
+            path = os.path.join(dir_path, str(folder_name))
         else:
-            path = os.path.join(dir_path, str(folder))
+        #子フォルダの場合
+            path = os.path.join(path, str(folder_name))
+
+        # フォルダが存在しない場合は作成
         if not os.path.isdir(path):
-            os.mkdir(path)
-            print(str(folder) + "フォルダを作成しました：" + path)
-            local_path[str(folder)] = path
-    print("**********")
+            os.makedirs(path)
+            print(f"{folder_name} フォルダを作成しました: {path}")
+        
+        # 作成したフォルダのパスを local_path に保存
+        local_path[str(folder_name)] = path
 
 def sanitize_filename(filename):
     # 使用できない文字のパターン
@@ -158,6 +176,29 @@ def sanitize_filename(filename):
     sanitized = sanitized.strip(' .')
     return sanitized
 
+def save_email_content(file_path, message):
+    """メール内容をファイルに書き込む"""
+    with open(file_path, "w", encoding='utf-8') as f:
+        f.write(f"送信日時: {message.SentOn}\n")
+        f.write(f"送信者: {message.Sender}\n")
+        f.write(f"送信者のメールアドレス: {message.SenderEmailAddress}\n")
+        f.write(f"宛先 (To): {message.To}\n")
+        f.write(f"CC: {message.CC}\n")
+        f.write(f"BCC: {message.BCC}\n")
+        f.write(f"件名: {message.Subject}\n")
+        f.write("本文 (プレーンテキスト):\n")
+        f.write(message.Body)
+        f.write("\n\n本文 (HTML):\n")
+        f.write(message.HTMLBody)
+    print(f"メール内容を保存しました: {file_path}")
+
+def save_attachments(attachment_folder_path, message):
+    """添付ファイルを保存"""
+    os.makedirs(attachment_folder_path, exist_ok=True)
+    for attachment in message.Attachments:
+        attachment_file_path = os.path.join(attachment_folder_path, attachment.FileName)
+        attachment.SaveAsFile(attachment_file_path)
+        print(f"添付ファイルを保存しました: {attachment_file_path}")
 
 # ここからメイン関数となる部分
 check_dir()
