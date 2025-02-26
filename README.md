@@ -1,7 +1,9 @@
 # メール自動仕分け 手順書
 
 ## 使用方法
+
 ### 環境構築
+
 1. 仮想環境の構築：```python3 -m venv myenv```
 2. 仮想環境の起動```.\myenv\Scripts\activate```
 	   権限エラーになった場合、以下を実行し実行権限を変更
@@ -9,19 +11,27 @@
 3. 必要なライブラリをインストール
 	```pip install -r requirements.txt```
 ### 準備と実行
+
 1. outlookアカウントの下にメールを振り分けたいフォルダを作成する。
 <img width="1470" alt="スクリーンショット 2025-02-26 18 06 14" src="https://github.com/user-attachments/assets/3f5a57c0-fd70-4531-bb38-fa8637540947" />
 2. mail_json_説明資料.txtを参考にして、mail.jsonを記述(テストの場合、少量のメールを対象にしてください)
 3. mail_move.pyの14行目dir_pathを変更(場所に指定なし)
 4. python ./mailmove.pyを実行
+
 ## 基本機能
+
 - outlookで受信したメールの本文と添付ファイルをpythonでフォルダ(プロジェクト単位)に振り分け社内サーバへ保存
 - 受信したメールと事前定義した仕分けのルールは部分一致で比較し、仕分け先フォルダを決めている（完全一致ではない）
+
 ### 追加機能
+
 - プロジェクト単位でチャネルを分けて本文をteamsに時系列的に流す。
 - ファイルはBoxなどのクラウドに保存し、リンクを流す（teamsとbox連携）
+
 ## Plan
+
 ### 実装順序
+
 1. outlook操作
   件名から保存するフォルダを判別する。既存のフォルダがない場合は新たに作成する。
 2. flaskサーバ上での実装
@@ -29,14 +39,18 @@
 3. teams workflowを用いた連携
 4. BOXクラウドからの通知
 5. 
+
 ### 基本機能
+
 以下の2つのライブラリを用いてメールをフォルダに振り分ける。
 - pywin32：WindowsのCOMオブジェクトを操作するためのライブラリです。Outlookの操作に必要な機能を提供しています。メールの読み込みに使用。
 - win32com.client：pywin32のサブモジュールで、COMオブジェクトを操作するための機能を提供しています。
 (参考 : [PythonでOutlookを操作する：メール送信から予定抽出まで | Pythonの学習帳](https://beginner-engineers.com/python-outlook/#Python%E3%81%A8Outlook%E3%81%AE%E9%80%A3%E6%90%BA%E3%81%95%E3%81%9B%E3%82%8B%E3%81%A8))
 
 常時稼働させるため、flaskサーバを構築し、その上でプログラムを動作させる。
+
 ### 追加機能
+
 1.workflowのwebhook要求を受信するとチャンネルに投函する機能を用いてteamsへメッセージを送信。
 <img width="1466" alt="スクリーンショット 2025-01-23 20 34 34" src="https://github.com/user-attachments/assets/839e6b15-2e5e-4855-9d56-771792d436de" />
 <img width="1470" alt="スクリーンショット 2025-01-23 20 36 47" src="https://github.com/user-attachments/assets/f3ebf4b7-7ba7-4c87-a12b-5690b3facae4" />
