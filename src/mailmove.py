@@ -2,6 +2,8 @@ import win32com.client
 import json
 import re
 import os
+import datetime
+# import schedule
 
 # Outlook関係のオブジェクト初期化
 app = win32com.client.Dispatch("Outlook.Application")
@@ -11,8 +13,11 @@ inbox = ns.GetDefaultFolder(6)
 messages = inbox.Items
 
 # ローカルフォルダへ保存するためのパスを定義
-dir_path = R"C:\Users\pcrik\OneDrive\ドキュメント\メールバックアップ" # Rはパスのエスケープシーケンスに必要
+dir_path = R"C:\Users\pcrik\Documents\メールバックアップ" # Rはパスのエスケープシーケンスに必要
 local_path = {}
+
+# メールをナンバリングするためのカウンター変数
+mail_counter = {}
 
 # Outlookのフォルダ検索
 def findfolder(root, name):
@@ -79,9 +84,8 @@ def move_mail(
     counter_delete = 0
     list_move = list()
     for message in target_folder.Items:#target_folderは受信トレイを指定
-        print(message)
         # print(len(target_folder.Items)) # これで受信フォルダにあるメールの件数が分かる
-        key = whichFolder(message, dic) # dicはload_json()で定義済み
+        key = whichFolder(message, dic) # dicはload_json()で定義済み、keyはメールの件名等から判断した仕分け先フォルダ名(mail.jsonで定義した一意な識別子)を格納
         # print(key) 
         if key == "del": # keyはフォルダ名。messageに適したフォルダがあったらフォルダ名が返ってきて、無かったらNoneが帰ってくる
             counter_delete += 1
@@ -92,6 +96,7 @@ def move_mail(
             or folders[key].folderpath == target_folder.folderpath
         ):
             counter_remain += 1
+            list_move.append((message, folders["archive"])) # 事前定義されていないメールはアーカイブへ移動
             if view_none: # 通常時はTrue, do_all_folder関数の時のみFalse
                 print(counter_remain, "none", message.subject) # 仕分け未登録の件名を出力
         elif dic[key]["unread"] or not message.unread: # 移動の際、未読を対象にするか？未読を対象にしない場合、message.unread == Flase
@@ -107,6 +112,10 @@ def move_mail(
     for item in list_move:
         message = item[0]
         dest = item[1]
+        try:
+            mail_counter[str(dest)] += 1
+        except KeyError:
+            mail_counter[str(dest)] = 1
         if dest is None:
             if view_delete:
                 print("delete", message.subject)
@@ -115,23 +124,23 @@ def move_mail(
             print(dest.name, message.subject)
             message.unread = False
             message.move(dest)
-            # メールの処理
+
+            # 保存先フォルダを作成
+            folder_name = message.ReceivedTime.strftime("%Y_%m%d") + f"_{mail_counter[str(dest)]:05d}"
+            folder_path = os.path.join(local_path[str(dest)], folder_name)
+            os.makedirs(folder_path, exist_ok=True)
+
             if message.Attachments.Count > 0:
                 # 添付ファイルがある場合、フォルダを作成して保存
-                file_name = sanitize_filename(message.Subject)
-                attachment_folder_path = os.path.join(local_path[str(dest)], file_name)
+                    #file_name = sanitize_filename(message.Subject)
+                attachment_folder_path = os.path.join(folder_path, "attachments")
                 save_attachments(attachment_folder_path, message)
                 
-                # メール内容をフォルダ内のテキストファイルに保存
-                file_name = file_name + ".txt"
-                file_path = os.path.join(attachment_folder_path, file_name)
-            else:
-                # 添付ファイルがない場合、通常のテキストファイルに保存
-                file_name = sanitize_filename(message.Subject) + ".txt"
-                file_path = os.path.join(local_path[str(dest)], file_name)
+            # 通常のテキストファイルに保存
+            file_name = os.path.join(folder_path, "本文.txt")
 
             # メール内容を保存
-            save_email_content(file_path, message)
+            save_email_content(file_name, message)
     print("moved:", counter_move, "delete:", counter_delete, "remain:", counter_remain)
     
 # アーカイブ処理を全アーカイブ対象フォルダに対して実行
@@ -141,9 +150,6 @@ def do_all_folder(dic, folders):
         if k != "del":
             move_mail(dic, folders, target_folder=folders[k], view_none=False)
     print("do all done.")
-
-# jsonからフォルダと
-dic, folders = load_json()
 
 def check_dir():
     """ローカルに保存するためのフォルダがあるか確認し、無い場合は新たに作成します。"""
@@ -167,30 +173,29 @@ def check_dir():
         # 作成したフォルダのパスを local_path に保存
         local_path[str(folder_name)] = path
 
-def sanitize_filename(filename):
-    # 使用できない文字のパターン
-    invalid_chars = r'[\\/:*?"<>| ]'
-    # 不正な文字を "_" に置き換える
-    sanitized = re.sub(invalid_chars, '_', filename)
-    # 先頭と末尾のスペースやドットを削除
-    sanitized = sanitized.strip(' .')
-    return sanitized
-
 def save_email_content(file_path, message):
-    """メール内容をファイルに書き込む"""
+    """メール内容をファイルに書き込む（HTML形式省略版）"""
+    header_fields = [
+        ("送信日時", message.SentOn),
+        ("送信者", f"{message.Sender} <{message.SenderEmailAddress}>"),
+        ("宛先 (To)", message.To),
+        ("CC", message.CC),
+        ("BCC", message.BCC),
+        ("件名", message.Subject)
+    ]
     with open(file_path, "w", encoding='utf-8') as f:
-        f.write(f"送信日時: {message.SentOn}\n")
-        f.write(f"送信者: {message.Sender}\n")
-        f.write(f"送信者のメールアドレス: {message.SenderEmailAddress}\n")
-        f.write(f"宛先 (To): {message.To}\n")
-        f.write(f"CC: {message.CC}\n")
-        f.write(f"BCC: {message.BCC}\n")
-        f.write(f"件名: {message.Subject}\n")
-        f.write("本文 (プレーンテキスト):\n")
-        f.write(message.Body)
-        f.write("\n\n本文 (HTML):\n")
-        f.write(message.HTMLBody)
-    print(f"メール内容を保存しました: {file_path}")
+        # 基本情報セクション
+        f.write("=== メール基本情報 ===\n")
+        for label, value in header_fields:
+            if value:  # 空の項目を非表示
+                f.write(f"・{label}: {value}\n")
+
+        # 本文セクション
+        f.write("\n=== 本文 ===\n")
+        f.write(f"{message.Body or '本文なし'}\n")
+        
+    print(f"メールバックアップ完了: {file_path}")
+
 
 def save_attachments(attachment_folder_path, message):
     """添付ファイルを保存"""
@@ -200,8 +205,33 @@ def save_attachments(attachment_folder_path, message):
         attachment.SaveAsFile(attachment_file_path)
         print(f"添付ファイルを保存しました: {attachment_file_path}")
 
+
 # ここからメイン関数となる部分
+# jsonからフォルダと
+dic, folders = load_json()
+# 日付が変わると日付を更新するようにする
+# ローカルフォルダのパスをmail.jsonにしたがって設定する
 check_dir()
 # print(local_path)
 # 受信フォルダに対して処理を行う場合
 move_mail(dic, folders)
+
+
+
+####### 作成に伴い不要となった関数群
+
+# def sanitize_filename(filename):
+#     # 使用できない文字のパターン
+#     invalid_chars = r'[\\/:*?"<>| ]'
+#     # 不正な文字を "_" に置き換える
+#     sanitized = re.sub(invalid_chars, '_', filename)
+#     # 先頭と末尾のスペースやドットを削除
+#     sanitized = sanitized.strip(' .')
+#     return sanitized
+
+# メールから日付を取得することにしたため削除
+# def set_date():
+#     d_today = datetime.date.today()
+#     # print(d_today+datetime.timedelta(days = 1))
+#     print(d_today)
+# schedule.every().day.at("00:00").do(set_date)
